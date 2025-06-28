@@ -1,0 +1,19 @@
+{
+  "name": "aster.io",
+  "version": "1.0.0",
+  "description": "A game to mine satoshis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "debug": "nodemon index.js"
+  },
+  "author": "LizzardM",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.0.0",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
