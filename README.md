@@ -96,13 +96,17 @@ npm run debug
 
 ---
 
-## 🔒 Segurança
+🔒 Segurança
 
-Atualmente, o projeto **não valida a assinatura digital da carteira**.
-Para produção, é recomendado utilizar:
+O projeto utiliza assinatura digital com MetaMask e nonces baseados em JWT para garantir que apenas o dono de uma carteira possa registrá-la e obter recompensas.
 
-* `eth_signMessage` no frontend.
-* Verificação de assinatura no backend (usando `ethers.js`).
+Mecanismos aplicados:
+
+- `eth_signMessage` no frontend, solicitando a assinatura de um nonce único.
+- Nonces temporários com expiração embutida via JWT.
+- Verificação da assinatura no backend com `ethers.js`.
+
+Isso previne ataques de reuso de assinatura (replay attacks) e garante autenticação segura sem armazenar estado no servidor.
 
 ---
 

@@ -3,6 +3,31 @@ const SV_URL = 'http://localhost:3000';
 let ethAddress = null;
 let worker = null;
 
+async function signAndRegister(ethAddress) {
+  const nonceRes = await fetch(`${SV_URL}/register/nonce?address=${ethAddress}`);
+  const { nonce } = await nonceRes.json();
+
+  const signature = await ethereum.request({
+    method: 'personal_sign',
+    params: [nonce, ethAddress],
+  });
+
+  const res = await fetch(`${SV_URL}/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ethAddress, nonce, signature }),
+  });
+
+  const data = await res.json();
+
+  if (res.ok) {
+    alert('Usuário conectado e autenticado!');
+  } else {
+    alert('Erro: ' + (data.error || 'Erro de autenticação'));
+  }
+}
+
+
 document.getElementById('connectBtn').addEventListener('click', async () => {
   if (!window.ethereum) {
     alert('MetaMask não está instalada!');
@@ -12,20 +37,7 @@ document.getElementById('connectBtn').addEventListener('click', async () => {
   try {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     ethAddress = accounts[0].toLowerCase();
-
-    const res = await fetch(`${SV_URL}/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ethAddress }),
-    });
-
-    if (res.ok) {
-      alert('Usuário conectado: ' + ethAddress);
-      document.getElementById('startTaskBtn').disabled = false;
-    } else {
-      const data = await res.json();
-      alert('Erro: ' + (data.error || 'Erro desconhecido'));
-    }
+    await signAndRegister(ethAddress);
   } catch (err) {
     console.error(err);
     alert('Erro ao conectar MetaMask');
