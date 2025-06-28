@@ -67,8 +67,8 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 ### 1. Clone o projeto
 
 ```bash
-git clone https://github.com/LizzardMedeiros/nome-do-projeto.git
-cd nome-do-projeto
+git clone https://github.com/LizzardMedeiros/cycle-mine.git
+cd cycle-mine
 ```
 
 ### 2. Instale dependências
@@ -125,6 +125,6 @@ Este projeto é aberto e visa testar o uso consciente de poder computacional par
 
 ## 👨‍🚀 Autor
 
-**Seu Nome ou Pseudônimo**
+**LizzardM**
 Contato: \[[luis.codemaker@gmail.com](mailto:luis.codemaker@gmail.com)]
 Twitter / GitHub / LinkedIn: \[@LizzardMedeiros]
