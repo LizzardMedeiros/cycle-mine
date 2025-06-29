@@ -55,9 +55,11 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 │   ├── fractal.verifier.js      # Validação de tarefas fractais
 │   └── index.js                 # Indice de verificadores
 ├── db/
+|   ├── rewards.json             # Armazenamento local das pontuações
 │   └── users.json               # Armazenamento local dos usuários
 ├── storage/
-│   └── local.storage.js         # Interface para leitura/gravação no JSON
+│   ├── users.storage.js         # Interface para leitura/gravação de usuários
+│   └── rewards.storage.js       # Interface para leitura/gravação de pontuações
 ```
 
 ---

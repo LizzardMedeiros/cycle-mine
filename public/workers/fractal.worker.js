@@ -11,6 +11,7 @@ self.onmessage = function(e) {
       x = xtemp;
       iteration++;
     }
+
     return iteration < maxIter;
   }
 

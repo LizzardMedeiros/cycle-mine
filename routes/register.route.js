@@ -1,7 +1,7 @@
 const express = require('express');
 const { ethers } = require('ethers');
 const router = express.Router();
-const userStorage = require('../storages/local.storage');
+const userStorage = require('../storages/users.storage');
 const jwtUtil = require('../utils/jwt.util');
 
 router.get('/nonce', (req, res) => {

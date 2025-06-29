@@ -27,8 +27,7 @@ async function signAndRegister(ethAddress) {
   }
 }
 
-
-document.getElementById('connectBtn').addEventListener('click', async () => {
+async function connect (callback = () => {}) {
   if (!window.ethereum) {
     alert('MetaMask não está instalada!');
     return;
@@ -38,13 +37,14 @@ document.getElementById('connectBtn').addEventListener('click', async () => {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     ethAddress = accounts[0].toLowerCase();
     await signAndRegister(ethAddress);
+    callback();
   } catch (err) {
     console.error(err);
     alert('Erro ao conectar MetaMask');
   }
-});
+};
 
-document.getElementById('startTaskBtn').addEventListener('click', async () => {
+async function start () {
   const res = await fetch(`${SV_URL}/task`);
   const { params, type } = await res.json();
 
@@ -62,6 +62,7 @@ document.getElementById('startTaskBtn').addEventListener('click', async () => {
 
   worker.postMessage(params);
   worker.onmessage = async (event) => {
+    console.log('resolved');
     const submit = await fetch(`${SV_URL}/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -73,6 +74,5 @@ document.getElementById('startTaskBtn').addEventListener('click', async () => {
 
     const confirm = await submit.json();
     console.log(confirm);
-    alert('Task finalizada. Resultado enviado com sucesso!');
   };
-});
+};

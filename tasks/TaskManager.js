@@ -1,8 +1,9 @@
 class TaskManager {
   constructor(taskType, options = {}) {
     this.taskType = taskType;
-    this.currentStart = options.start || 3000000;
-    this.batchSize = options.batchSize || 1000;
+    this.currentStart = options.start || 3_000_000_000;
+    this.batchSize = options.batchSize || 500_000;
+    this.maxIterations = options.maxIterations || 800;
   }
 
   getNextTask() {
