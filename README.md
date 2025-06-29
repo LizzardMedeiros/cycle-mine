@@ -38,6 +38,9 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 /cdr
 │
 ├── index.js                     # Inicialização do servidor
+├── game/
+│   ├── engine.js                # Engine do jogo
+|   └── socket.js                # Socket para comunicação com frontend
 ├── public/                      # Frontend
 │   ├── index.html               # Interface mínima
 │   ├── main.js                  # Lógica de conexão + task
@@ -57,7 +60,7 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 ├── db/
 |   ├── rewards.json             # Armazenamento local das pontuações
 │   └── users.json               # Armazenamento local dos usuários
-├── storage/
+├── storages/
 │   ├── users.storage.js         # Interface para leitura/gravação de usuários
 │   └── rewards.storage.js       # Interface para leitura/gravação de pontuações
 ```
@@ -95,6 +98,8 @@ npm run debug
 2. Conecta a MetaMask e registra sua carteira.
 3. Inicia uma tarefa computacional (ex: fractal).
 4. O resultado é validado e a recompensa é registrada no backend.
+5. O Backend distribui as recompensas através de um minigame.
+6. Os jogadores que vencerem o game podem sacar suas recompensas em bitcoin
 
 ---
 
@@ -117,7 +122,7 @@ Isso previne ataques de reuso de assinatura (replay attacks) e garante autentica
 * 🧹 Integração com **Render Network** para tarefas reais com recompensa em RNDR.
 * 🚀 Integração com **BOINC** para computação científica real.
 * 🗒️ Migração para **MongoDB** com histórico de tarefas.
-* 🎮 Interface visual com jogo estilo Asteroids.
+* 🎮 Interface visual com minigames.
 * 📊 Leaderboard e painel de progresso.
 
 ---
