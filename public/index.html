@@ -23,16 +23,13 @@
   connect(() => {
     const playBtn = document.getElementById('startTaskBtn');
     playBtn.disabled = false;
+    start();
   });
 
   document
     .getElementById('startTaskBtn')
     .addEventListener('click', () => {
       socket.emit('join', ethAddress);
-
-      socket.on("job:new", () => {
-        start();
-      });
 
       socket.on(`${ethAddress}:refresh`, (data) => {
         const score = document.getElementById('score');

