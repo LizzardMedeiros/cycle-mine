@@ -29,9 +29,7 @@ function verifySubset(primes, range, sampleSize = 5) {
 
 function primeVerifier(params) {
   const { range, results } = params;
-  if (!range || !results) {
-    throw new Error('Missing range or primes');
-  }
+  if (!range || !results)  throw new Error('Missing range or primes');
 
   const result = verifySubset(results, range);
   result.reward = result.isValid ? results.length * 0.00001 : 0;

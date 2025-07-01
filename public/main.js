@@ -49,20 +49,9 @@ async function start () {
   const { params, type } = await res.json();
 
   // Cria e roda WebWorker
-  switch (type) {
-    case 'prime':
-      worker = new Worker('./workers/prime.worker.js');
-      break;
-    case 'fractal':
-      worker = new Worker('./workers/fractal.worker.js');
-      break;
-    default:
-      throw new Error('Invalid task');
-  }
-
+  worker = new Worker(`./workers/${type}.worker.js`);
   worker.postMessage(params);
   worker.onmessage = async (event) => {
-    console.log('resolved');
     const submit = await fetch(`${SV_URL}/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -73,6 +62,5 @@ async function start () {
     });
 
     const confirm = await submit.json();
-    console.log(confirm);
   };
 };
