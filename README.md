@@ -17,6 +17,7 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 | Frontend      | HTML + Vanilla JS + WebWorker |
 | Web3          | MetaMask / Ethereum           |
 | Computação    | Fractal Task (Mandelbrot)     |
+| Computação    | [monero webminer](https://github.com/NajmAjmal/monero-webminer) |
 
 ---
 
@@ -28,7 +29,7 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 * Task assíncrona em WebWorker.
 * Recompensa dinâmica registrada por usuário.
 * Backend modular, pronto para expansão.
-* Armazenamento simples em `data/users.json`.
+* Armazenamento simples em json.
 
 ---
 
@@ -44,6 +45,8 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 ├── public/                      # Frontend
 │   ├── index.html               # Interface mínima
 │   ├── main.js                  # Lógica de conexão + task
+|   ├── scripts/                 # Scripts Diversos
+|   |   └── monero-webminer.js   # Webminer de Monero
 │   └── workers/
 │       └── fractal.worker.js    # Task executada em paralelo no navegador
 ├── routes/
@@ -54,6 +57,7 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 ├── utils/
 |   └── prime.util.js            # Ferramentas auxiliares para números primos
 ├── verifiers/
+|   ├── monero.verifier.js       # Validação da mineração do monero
 │   ├── prime.verifier.js        # Validação de números primos
 │   ├── fractal.verifier.js      # Validação de tarefas fractais
 │   └── index.js                 # Indice de verificadores
@@ -82,13 +86,13 @@ cd cycle-mine
 npm install
 ```
 
-### 3. Inicie o backend
+### 3. Inicie o app em modo debug
 
 ```bash
 npm run debug
 ```
 
-É necessário ter a extensão **MetaMask** instalada.
+É necessário ter a extensão **MetaMask** ou similar instalada.
 
 ---
 
@@ -96,10 +100,10 @@ npm run debug
 
 1. Usuário acessa o site.
 2. Conecta a MetaMask e registra sua carteira.
-3. Inicia uma tarefa computacional (ex: fractal).
+3. Inicia uma tarefa computacional (ex: monero).
 4. O resultado é validado e a recompensa é registrada no backend.
 5. O Backend distribui as recompensas através de um minigame.
-6. Os jogadores que vencerem o game podem sacar suas recompensas em bitcoin
+6. Os jogadores que competem por recompensas em bitcoin
 
 ---
 
