@@ -23,7 +23,7 @@ async function saveUsers(users) {
 // Função para buscar usuário por ethAddress
 async function findUserByAddress(ethAddress) {
   const users = await readUsers();
-  return users.find(u => u.ethAddress.toLowerCase() === ethAddress.toLowerCase());
+  return users.find(u => u?.ethAddress?.toLowerCase() === ethAddress.toLowerCase());
 }
 
 // Função para adicionar usuário novo

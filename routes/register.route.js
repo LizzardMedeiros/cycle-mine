@@ -33,8 +33,7 @@ router.post('/', async (req, res) => {
 
     const newUser = {
       ethAddress: ethAddress.toLowerCase(),
-      createdAt: new Date().toISOString(),
-      rewards: 0.0,
+      score: 0.0,
     };
 
     await userStorage.addUser(newUser);

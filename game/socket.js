@@ -5,60 +5,55 @@ const Engine = require('./engine');
 
 module.exports = (...server) => {
   const io = socketIo(...server);
-  const usersConnected = new Map();
   const game = new Engine(io);
   game.start();
 
-  // Gerar novos circulos de tempos em tempos
+  // Gerar novos asteroides
   setInterval(async () => {
     const totalScoreAvailable = await rewardStorage.getScore();
     if (!totalScoreAvailable) return;
-    game.spawnCircle(totalScoreAvailable);
+    game.spawnAsteroid(totalScoreAvailable);
     await rewardStorage.saveScore([]);
   }, 10_000);
 
   io.on('connection', async (socket) => {
-    console.log(`client ${socket.id} join...`);
+    console.log(`client ${socket.id} try to login...`);
 
     // Eventos
     socket.on('join', async (ethAddress) => {
       const existingUser = await userStorage.findUserByAddress(ethAddress);
       if (!existingUser) return;
-      usersConnected.set(socket.id, existingUser);
-      io.emit(`${ethAddress}:refresh`, {
-        score: (existingUser.rewards || 0.0).toFixed(2),
-      });
+      const player = game.addPlayer(socket.id);
+      player.ethAddress = ethAddress;
+      player.score = existingUser.rewards || 0.0;
+      console.log(`Player ${socket.id} joined!`);
     });
 
-    socket.on('claim', async (id) => {
-      // lógica para capturar o clique no círculo
-      const reward = game.claimCircle(id);
-      const user = usersConnected.get(socket.id);
-
-      if (!user) return;
-
-      user.rewards = user.rewards || 0.0;
-      user.rewards += reward;
-
-      usersConnected.forEach((u) => {
-        io.emit(`${u.ethAddress}:refresh`, {
-          score: (u.rewards || 0.0).toFixed(2),
-        });
-      })
+    socket.on('u', (data) => { // Updating
+      const [x, y, a] = data;
+      const player = game.getPlayer(socket.id);
+      if (!player) return;
+      player.x = x;
+      player.y = y;
+      player.angle = a;
     });
 
     socket.on('disconnect', async () => {
       console.log(`client ${socket.id} leave...`);
+
       const userList = await userStorage.readUsers();
-      const user = usersConnected.get(socket.id);
+      const user = game.getPlayer(socket.id);
 
       if (!user) return;
 
       const newUserList = userList.filter((u) => u.ethAddress !== user.ethAddress);
-      newUserList.push(user);
+      newUserList.push({
+        ethAddress: user.ethAddress,
+        score: user.score,
+      });
       await userStorage.saveUsers(newUserList);
 
-      usersConnected.delete(socket.id);
+      game.removePlayer(socket.id);
       socket.disconnect(0);
     });
   });

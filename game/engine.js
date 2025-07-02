@@ -1,12 +1,10 @@
 const { v4: uuidv4 } = require('uuid');
 
-class Circle {
+class Asteroid {
   constructor (score) {
     this.id = uuidv4();
-    this.x = Math.random(); // normalizar: frontend escala pela tela
+    this.x = Math.random();
     this.y = Math.random();
-    this.radius = 0.05 + Math.random() * 0.1;
-    this.color = `hsl(${Math.floor(Math.random() * 360)}, 80%, 60%)`;
     this.createdAt = Date.now();
     this.score = score || 0.001;
   }
@@ -16,8 +14,26 @@ class Circle {
       id: this.id,
       x: this.x,
       y: this.y,
-      radius: this.radius,
-      color: this.color,
+    }
+  }
+}
+
+class Player {
+  constructor (socketId) {
+    this.id = socketId || uuidv4();
+    this.x = Math.random();
+    this.y = Math.random();
+    this.createdAt = Date.now();
+    this.ethAddress = '0x0';
+    this.score = 0.0;
+    this.angle = 0.0;
+  }
+
+  toJSON() {
+    return {
+      x: this.x,
+      y: this.y,
+      a: this.angle,
     }
   }
 }
@@ -25,37 +41,46 @@ class Circle {
 class GameEngine {
   constructor(io) {
     this.io = io;
-    this.activeCircles = new Map();
+    this.activeAsteroids = new Map();
+    this.playerList = new Map();
     this.fps = 10;
     this.interval;
   }
 
-  spawnCircle(score) {
-    const circle = new Circle(score);
-    this.activeCircles.set(circle.id, circle);
+  addPlayer (socketId) {
+    const p = new Player(socketId);
+    this.playerList.set(socketId, p);
+    return p;
   }
 
-  claimCircle(circleId) {
-    const circle = this.activeCircles.get(circleId);
-    if (!circle) return;
+  removePlayer (id) {
+    this.playerList.delete(id);
+  }
 
-    this.activeCircles.delete(circleId);
-    this.io.emit('circle:claimed', circleId);
+  getPlayer (id) {
+    return this.playerList.get(id);
+  }
 
-    return circle.score;
+  spawnAsteroid(score) {
+    const aster = new Asteroid(score);
+    this.activeAsteroids.set(aster.id, aster);
   }
 
   start() {
     const ms = Math.max(1000 / this.fps, 1);
     this.interval = setInterval(() => {
-      this.activeCircles.forEach((c) => {
-        this.io.emit('circle:refresh', c.toJSON());
+      this.activeAsteroids.forEach((c) => {
+        this.io.emit('aster:refresh', c.toJSON());
       });
+      this.playerList.forEach((p) => {
+        console.clear();
+        console.log(p.toJSON());
+      })
     }, ms);
   }
 
   stop() {
-    this.activeCircles = new Map();
+    this.activeAsteroids.clear();
     clearInterval(this.interval);
   }
 }

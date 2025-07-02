@@ -1,75 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="main.js" defer></script>
-  <title>Document</title>
+  <title>Game</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
 </head>
 <body>
-  <p id="score"></p>
-  <button id="startTaskBtn" disabled>Iniciar Jogo</button>
-  <canvas id="game" width="800" height="600"></canvas>
+  <script src="./scripts/main.js" type="module"></script>
 </body>
-
-<!-- Game Script -->
-<script type="module" defer>
-  import { io } from "https://cdn.socket.io/4.8.1/socket.io.esm.min.js";
-  const socket = io();
-  const canvas = document.getElementById('game');
-  const ctx = canvas.getContext('2d');
-  const circles = new Map();
-
-  connect(() => {
-    const playBtn = document.getElementById('startTaskBtn');
-    playBtn.disabled = false;
-    start();
-  });
-
-  document
-    .getElementById('startTaskBtn')
-    .addEventListener('click', () => {
-      socket.emit('join', ethAddress);
-
-      socket.on(`${ethAddress}:refresh`, (data) => {
-        const score = document.getElementById('score');
-        score.innerText = data.score;
-      });
-
-      socket.on("circle:refresh", (data) => {
-        if (circles.get(data.id)) return;
-        circles.set(data.id, data);
-        render();
-      });
-
-      socket.on('circle:claimed', (id) => {
-        circles.delete(id)
-        render();
-      });
-    });
-
-  canvas.addEventListener('click', (e) => {
-    const x = e.offsetX / canvas.width;
-    const y = e.offsetY / canvas.height;
-    circles.forEach((c) => {
-      const dx = c.x - x;
-      const dy = c.y - y;
-      const dist = Math.sqrt(dx*dx + dy*dy);
-      if (dist < c.radius) {
-        socket.emit('claim', c.id);
-        return;
-      }
-    })
-  });
-
-  function render() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    circles.forEach((c) => {
-      ctx.beginPath();
-      ctx.arc(c.x * canvas.width, c.y * canvas.height, c.radius * canvas.width, 0, 2 * Math.PI);
-      ctx.fillStyle = c.color;
-      ctx.fill();
-    })
-  }
-</script>
 </html>
