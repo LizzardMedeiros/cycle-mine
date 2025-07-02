@@ -10,7 +10,8 @@ const { TYPE = 'prime' } = process.env;
 router.post('/', async (req, res) => {
   const { params, ethAddress } = req.body;
   try {
-    const result = verifiers[TYPE](params);
+    const result = await verifiers[TYPE](params);
+    console.log(result);
     await rewardStorage.addScore(ethAddress, result.reward);
     return res.json(result);
   } catch (err) {

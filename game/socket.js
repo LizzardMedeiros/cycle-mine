@@ -12,7 +12,7 @@ module.exports = (...server) => {
   // Gerar novos circulos de tempos em tempos
   setInterval(async () => {
     const totalScoreAvailable = await rewardStorage.getScore();
-    if (totalScoreAvailable === 0) return;
+    if (!totalScoreAvailable) return;
     game.spawnCircle(totalScoreAvailable);
     await rewardStorage.saveScore([]);
   }, 10_000);

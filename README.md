@@ -64,9 +64,9 @@ A arquitetura é modular, aberta para evoluir e integrar plataformas como **Rend
 ├── db/
 |   ├── rewards.json             # Armazenamento local das pontuações
 │   └── users.json               # Armazenamento local dos usuários
-├── storages/
-│   ├── users.storage.js         # Interface para leitura/gravação de usuários
-│   └── rewards.storage.js       # Interface para leitura/gravação de pontuações
+└── storages/
+    ├── users.storage.js         # Interface para leitura/gravação de usuários
+    └── rewards.storage.js       # Interface para leitura/gravação de pontuações
 ```
 
 ---
