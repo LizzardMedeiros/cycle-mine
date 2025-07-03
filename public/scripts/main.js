@@ -24,6 +24,7 @@ const config = {
 };
 
 let ethAddress, worker, player, cursors, pointer, lastSentRotation;
+const asteroidList = new Map();
 
 const game = new Phaser.Game(config);
 
@@ -31,22 +32,25 @@ function preload() {
   // Cria o sprite para os asteroids
   this.graphics = this.add.graphics();
   this.graphics.fillStyle(0xffffff, 1);
-  this.graphics.fillRect(0, 0, 48, 48);
-  this.graphics.generateTexture('aster', 48, 48);
+  this.graphics.fillRect(0, 0, 256, 256);
+  this.graphics.generateTexture('aster', 256, 256);
   this.graphics.destroy(); // remove do canvas
 
   // Carrega o sprite do personagem
   this.load.image('player', './sprites/mantis.png');
+  this.load.image('bg', './sprites/bg.png');
 }
 
 function create() {
-  // Mundo de 10000 x 10000
-  this.cameras.main.setBounds(0, 0, 10000, 10000);
-  this.physics.world.setBounds(0, 0, 10000, 10000);
+  this.cameras.main.setBounds(0, 0, 2000, 2000);
+  this.physics.world.setBounds(0, 0, 2000, 2000);
+  this.bg = this.add.tileSprite(0, 0, window.innerWidth, window.innerHeight, 'bg')
+    .setOrigin(0, 0)
+    .setScrollFactor(0);
 
   // Posição aleatória dentro do mundo
-  const spawnX = Phaser.Math.Between(0, 10000);
-  const spawnY = Phaser.Math.Between(0, 10000);
+  const spawnX = Phaser.Math.Between(0, 2000);
+  const spawnY = Phaser.Math.Between(0, 2000);
 
   // Adiciona jogador
   player = this.physics.add.sprite(spawnX, spawnY, 'player');
@@ -60,23 +64,54 @@ function create() {
   pointer = this.input.activePointer;
 
   lastSentRotation = 0.0;
+
+  // Eventos
+  socket.on('aster:destroy', (id) => {
+    const a = asteroidList.get(id);
+    if (!a) return;
+    a.destroy();
+    asteroidList.delete(id);
+  });
+  socket.on("aster:refresh", (data) => {
+    const { id, x, y, a } = data;
+
+    // Se o sprite ainda não existe, cria
+    if (!asteroidList.get(id)) {
+      const sprite = this.add.sprite(x, y, 'aster');
+      sprite.setDisplaySize(64, 64);
+      sprite.setRotation(a);
+      asteroidList.set(id, sprite);
+    }
+
+    asteroidList.forEach((aster) => {
+      aster.setRotation(a);
+      aster.setPosition(x, y);
+    });
+  });
 }
 
 function update() {
-  const speed = 300;
-  player.setVelocity(0);
-
-  if (cursors.left.isDown) player.setVelocityX(-speed);
-  else if (cursors.right.isDown) player.setVelocityX(speed);
-
-  if (cursors.up.isDown) player.setVelocityY(-speed);
-  else if (cursors.down.isDown) player.setVelocityY(speed);
+  this.bg.tilePositionX = this.cameras.main.scrollX;
+  this.bg.tilePositionY = this.cameras.main.scrollY;
 
   // Aponta para o cursor do mouse (convertido para coordenadas do mundo)
   const worldPoint = pointer.positionToCamera(this.cameras.main);
-  const angle = Phaser.Math.Angle.Between(player.x, player.y, worldPoint.x, worldPoint.y)
-              + Phaser.Math.DegToRad(90);
-  player.setRotation(angle);
+  const dx = worldPoint.x - player.x;
+  const dy = worldPoint.y - player.y;
+
+  const distance = Math.hypot(dx, dy); // distância euclidiana
+  const angle = Math.atan2(dy, dx);
+  player.setRotation(angle + Phaser.Math.DegToRad(90));
+
+  // Se o mouse está longe o suficiente, move em direção a ele
+  const threshold = 10; // distância mínima para considerar "em cima"
+  const speed = 200;
+
+  if (distance > threshold) {
+    const vx = Math.cos(angle) * speed;
+    const vy = Math.sin(angle) * speed;
+    player.setVelocity(vx, vy);
+  } else player.setVelocity(0);
 
   if (this.game.getFrame() % UPDATE_INTERVAL === 0 && socket.id) {
     if (Math.abs(angle - lastSentRotation) < ROTATION_PRECISION) return;
@@ -154,5 +189,9 @@ connect(() => {
 
 // Responsividade da viewport
 window.addEventListener('resize', () => {
-  game.scale.resize(window.innerWidth, window.innerHeight);
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+
+  game.scale.resize(width, height);
+  if (bg) bg.setSize(width, height);
 });

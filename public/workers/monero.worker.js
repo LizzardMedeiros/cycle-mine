@@ -1,5 +1,5 @@
 // moneroWorker.js
-self.importScripts('../scripts/monero-webminer.js');
+self.importScripts('../scripts/webminer.js');
 self.onmessage = function (e) {
   const {
     wallet,

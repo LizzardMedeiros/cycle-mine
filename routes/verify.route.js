@@ -11,7 +11,6 @@ router.post('/', async (req, res) => {
   const { params, ethAddress } = req.body;
   try {
     const result = await verifiers[TYPE](params);
-    console.log(result);
     await rewardStorage.addScore(ethAddress, result.reward);
     return res.json(result);
   } catch (err) {
